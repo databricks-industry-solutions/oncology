@@ -16,10 +16,43 @@ from solacc.companion import NotebookSolutionCompanion
 
 # COMMAND ----------
 
-hls_jsl_cluster = dbutils.secrets.get("solution-accelerator-cicd", "hls_jsl_cluster") # This cluster is available in Databricks' internal environment only. Reach out to Databricks and JSL sales engineering and get a cluster set up to run these accelerators in your own environment
+cluster_json = {
+    "num_workers": 8,
+    "cluster_name": "oncology_cluster",
+    "spark_version": "9.1.x-cpu-ml-scala2.12", # TODO: This needs to be updated to match JSL 4.1
+    "spark_conf": {
+        "spark.serializer": "org.apache.spark.serializer.KryoSerializer",
+        "spark.kryoserializer.buffer.max": "2000M",
+        "spark.databricks.delta.formatCheck.enabled": "false"
+    },
+    "node_type_id": "i3.xlarge",
+    "driver_node_type_id": "i3.xlarge",
+    "autotermination_minutes": 120
+}
+
+# COMMAND ----------
+
+nsc = NotebookSolutionCompanion()
+cluster_id = nsc.create_or_update_cluster_by_name(nsc.customize_cluster_json(cluster_json))
+
+# COMMAND ----------
+
+task_json = {'tasks': [{
+    'task_key': 'setup_cluster',
+    'depends_on': [],
+    'existing_cluster_id': cluster_id,
+    "notebook_task": {
+        "notebook_path": "/Shared/John Snow Labs/Install JohnSnowLabs NLP",
+        "source": "WORKSPACE"
+        },
+    'timeout_seconds': 86400}]
+            }
+nsc.submit_run(task_json)
+
+# COMMAND ----------
+
 job_json = {
         "timeout_seconds": 7200,
-        "name": job_name,
         "max_concurrent_runs": 1,
         "tags": {
             "usage": "solacc_testing",
@@ -27,7 +60,7 @@ job_json = {
         },
         "tasks": [
             {
-                "existing_cluster_id": hls_jsl_cluster,
+                "existing_cluster_id": cluster_id,
                 "notebook_task": {
                     "notebook_path": f"00-README"
                 },
@@ -35,7 +68,7 @@ job_json = {
                 "description": ""
             },
             {
-                "existing_cluster_id": hls_jsl_cluster,
+                "existing_cluster_id": cluster_id,
                 "libraries": [],
                 "notebook_task": {
                     "notebook_path": f"01-entity-extraction"
@@ -49,7 +82,7 @@ job_json = {
                 ]
             },
             {
-                "existing_cluster_id": hls_jsl_cluster,
+                "existing_cluster_id": cluster_id,
                 "libraries": [],
                 "notebook_task": {
                     "notebook_path": f"02-oncology-analytics"
@@ -63,7 +96,7 @@ job_json = {
                 ]
             },
             {
-                "existing_cluster_id": hls_jsl_cluster,
+                "existing_cluster_id": cluster_id,
                 "libraries": [],
                 "notebook_task": {
                     "notebook_path": f"03-create-db"
@@ -77,7 +110,7 @@ job_json = {
                 ]
             },
             {
-                "existing_cluster_id": hls_jsl_cluster,
+                "existing_cluster_id": cluster_id,
                 "libraries": [],
                 "notebook_task": {
                     "notebook_path": f"04-config"
@@ -92,13 +125,12 @@ job_json = {
             }
         ]
     }
-    
 
 # COMMAND ----------
 
 dbutils.widgets.dropdown("run_job", "False", ["True", "False"])
 run_job = dbutils.widgets.get("run_job") == "True"
-NotebookSolutionCompanion().deploy_compute(job_json, run_job=run_job)
+nsc.deploy_compute(job_json, run_job=run_job)
 
 # COMMAND ----------
 
