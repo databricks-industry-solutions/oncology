@@ -41,8 +41,7 @@ cluster_json = {
         "spark.kryoserializer.buffer.max": "2000M",
         "spark.databricks.delta.formatCheck.enabled": "false"
     },
-    "node_type_id": "i3.xlarge",
-    "driver_node_type_id": "i3.xlarge",
+    "node_type_id": {"AWS": "i3.xlarge", "MSA": "Standard_D3_v2", "GCP": "n1-highmem-4"},
     "autotermination_minutes": 120
 }
 
