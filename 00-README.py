@@ -9,12 +9,12 @@
 # MAGIC 
 # MAGIC The first step in our accelerator is to extract variables using various models for [Named-Entity Recognition (NER)](https://www.johnsnowlabs.com/named-entity-recognition-ner-with-bert-in-spark-nlp/). To do that, we first set up our NLP pipeline, which contains [annotators](https://nlp.johnsnowlabs.com/docs/en/annotators) such as [documentAssembler](https://nlp.johnsnowlabs.com/docs/en/annotators#documentassembler) and [sentenceDetector](https://nlp.johnsnowlabs.com/docs/en/annotators#sentencedetector) and [tokenizer](https://nlp.johnsnowlabs.com/docs/en/annotators#tokenizer)  that are trained specifically for healthcare-related NER. 
 # MAGIC <br>
-# MAGIC <img src="https://hls-eng-data-public.s3.amazonaws.com/img/phi-deid-ra.png" width=65%>
+# MAGIC <img src="https://raw.githubusercontent.com/JohnSnowLabs/spark-nlp-workshop/master/databricks/solution_accelerators/images/dbr_flow.png" width=65%>
 # MAGIC 
 # MAGIC We then create dataframes of extracted entitities and land the tables in Delta where can be accessed for interactive analysis or dashboarding using [databricks SQL](https://databricks.com/product/databricks-sql). 
 # MAGIC 
 # MAGIC <br>
-# MAGIC <img src="https://hls-eng-data-public.s3.amazonaws.com/img/jsl-dash.png" width=65%>
+# MAGIC <img src="https://raw.githubusercontent.com/JohnSnowLabs/spark-nlp-workshop/master/databricks/solution_accelerators/images/insights_from_oncology_repots" width=65%>
 # MAGIC 
 # MAGIC ## Data
 # MAGIC 
@@ -61,7 +61,7 @@
 # MAGIC 
 # MAGIC In addition you need the following libraires intsalled:
 # MAGIC 
-# MAGIC <img src="https://drive.google.com/uc?id=1yI0qw1ZNHcYBqyF5BDJ8AbE6WvWlphvG" width=80%>
+# MAGIC <img src="https://raw.githubusercontent.com/JohnSnowLabs/spark-nlp-workshop/master/databricks/solution_accelerators/images/410_cluster.jpg" width=80%>
 
 # COMMAND ----------
 
