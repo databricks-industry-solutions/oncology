@@ -145,7 +145,7 @@ job_json = {
 
 dbutils.widgets.dropdown("run_job", "False", ["True", "False"])
 run_job = dbutils.widgets.get("run_job") == "True"
-nsc.deploy_compute(job_json, run_job=run_job)
+nsc.deploy_compute(job_json, run_job=run_job, wait=1800)
 
 # COMMAND ----------
 
