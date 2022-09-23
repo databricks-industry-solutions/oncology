@@ -73,7 +73,3 @@ class SolAccUtil:
       print(f'data available in {self.data_path} are:')
       print('*'*100)
       display(files)
-
-# COMMAND ----------
-
-
