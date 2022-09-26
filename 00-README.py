@@ -58,10 +58,6 @@
 # MAGIC - Install the license key in the cluster
 # MAGIC - Load 20+ Python notebooks with examples
 # MAGIC - Email you once it’s all done
-# MAGIC 
-# MAGIC In addition you need the following libraires intsalled:
-# MAGIC 
-# MAGIC <img src="https://raw.githubusercontent.com/JohnSnowLabs/spark-nlp-workshop/master/databricks/solution_accelerators/images/410_cluster.jpg" width=80%>
 
 # COMMAND ----------
 
