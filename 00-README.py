@@ -14,7 +14,7 @@
 # MAGIC We then create dataframes of extracted entitities and land the tables in Delta where can be accessed for interactive analysis or dashboarding using [databricks SQL](https://databricks.com/product/databricks-sql). 
 # MAGIC 
 # MAGIC <br>
-# MAGIC <img src="https://raw.githubusercontent.com/JohnSnowLabs/spark-nlp-workshop/master/databricks/solution_accelerators/images/insights_from_oncology_repots" width=65%>
+# MAGIC <img src="https://raw.githubusercontent.com/JohnSnowLabs/spark-nlp-workshop/master/databricks/solution_accelerators/images/insights_from_oncology_repots.png" width=65%>
 # MAGIC 
 # MAGIC ## Data
 # MAGIC 
