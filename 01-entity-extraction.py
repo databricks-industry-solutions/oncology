@@ -1,4 +1,9 @@
 # Databricks notebook source
+# MAGIC %md 
+# MAGIC You may find this series of notebooks at https://github.com/databricks-industry-solutions/oncology. For more information about this solution accelerator, visit https://www.databricks.com/solutions/accelerators/nlp-oncology.
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #Abstracting Real World Data from Oncology Notes: Entity Extraction
 # MAGIC [MT ONCOLOGY NOTES](https://www.mtsamplereports.com/) comprises of millions of ehr records of patients. It contains semi-structured data like demographics, insurance details, and a lot more, but most importantly, it also contains free-text data like real encounters and notes.

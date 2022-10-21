@@ -1,4 +1,9 @@
 # Databricks notebook source
+# MAGIC %md 
+# MAGIC You may find this series of notebooks at https://github.com/databricks-industry-solutions/oncology. For more information about this solution accelerator, visit https://www.databricks.com/solutions/accelerators/nlp-oncology.
+
+# COMMAND ----------
+
 project_data_paths = {'omop-cdm-100K':"s3://hls-eng-data-public/data/rwe/all-states-90K/","omop-cdm-10K":"s3://hls-eng-data-public/data/synthea/",'psm':"s3://hls-eng-data-public/data/rwe/dbx-covid-sim/", "onc-lh":"s3://hls-eng-data-public/mt_oc_notes/"}
 
 # COMMAND ----------
