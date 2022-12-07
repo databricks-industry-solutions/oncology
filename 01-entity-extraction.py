@@ -1,4 +1,9 @@
 # Databricks notebook source
+# MAGIC %md 
+# MAGIC You may find this series of notebooks at https://github.com/databricks-industry-solutions/oncology. For more information about this solution accelerator, visit https://www.databricks.com/solutions/accelerators/nlp-oncology.
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC #Abstracting Real World Data from Oncology Notes: Entity Extraction
 # MAGIC [MT ONCOLOGY NOTES](https://www.mtsamplereports.com/) comprises of millions of ehr records of patients. It contains semi-structured data like demographics, insurance details, and a lot more, but most importantly, it also contains free-text data like real encounters and notes.
@@ -20,7 +25,7 @@
 
 # COMMAND ----------
 
-# MAGIC %pip install spark-nlp-display
+# MAGIC %pip install mlflow
 
 # COMMAND ----------
 
@@ -228,7 +233,7 @@ ner_model = ner_pipeline.fit(empty_data)
 # COMMAND ----------
 
 light_model =  LightPipeline(ner_model)
-ann_text = light_model.fullAnnotate(sample_text)[0]
+ann_text = light_model.fullAnnotate(sample_text.text)[0]
 ann_text.keys()
 
 # COMMAND ----------
@@ -246,6 +251,9 @@ displayHTML(ner_vis)
 
 # COMMAND ----------
 
+# MAGIC 
+# MAGIC 
+# MAGIC 
 # MAGIC %md
 # MAGIC ## 1. ICD-10 code extraction
 # MAGIC In this step we get ICD-10 codes using entity resolvers and use the data for various use cases.
@@ -292,7 +300,7 @@ sbert_embedder = BertSentenceEmbeddings.pretrained("sbert_jsl_medium_uncased", '
   .setOutputCol("sentence_embeddings")
 
 icd10_resolver = SentenceEntityResolverModel.pretrained("sbertresolve_icd10cm_slim_billable_hcc_med","en", "clinical/models")\
-  .setInputCols(["ner_chunks", "sentence_embeddings"]) \
+  .setInputCols(["sentence_embeddings"]) \
   .setOutputCol("icd10_code")\
   .setDistanceFunction("EUCLIDEAN")
 
@@ -540,13 +548,13 @@ rxnorm_ner_model = pipeline_rxnorm_ingredient.fit(data_ner)
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC `NerVisualizer` woks with LightPipeline, so we will create a `rxnorm_lp` with our `rxnorm_model`.
+# MAGIC `NerVisualizer` works with LightPipeline, so we will create a `rxnorm_lp` with our `rxnorm_model`.
 
 # COMMAND ----------
 
 rxnorm_ner_lp = LightPipeline(rxnorm_ner_model)
 
-ann_text = rxnorm_ner_lp.fullAnnotate(sample_text)[0]
+ann_text = rxnorm_ner_lp.fullAnnotate(sample_text.text)[0]
 print(ann_text.keys())
 
 # COMMAND ----------
@@ -592,8 +600,8 @@ sbert_embedder = BertSentenceEmbeddings.pretrained("sbiobert_base_cased_mli", 'e
   .setInputCols(["ner_chunks"])\
   .setOutputCol("sentence_embeddings")
 
-rxnorm_resolver = SentenceEntityResolverModel.pretrained("sbiobertresolve_rxnorm","en", "clinical/models")\
-  .setInputCols(["ner_chunks", "sentence_embeddings"]) \
+rxnorm_resolver = SentenceEntityResolverModel.pretrained("sbiobertresolve_rxnorm_augmented","en", "clinical/models")\
+  .setInputCols(["sentence_embeddings"]) \
   .setOutputCol("rxnorm_code")\
   .setDistanceFunction("EUCLIDEAN")
 
@@ -642,7 +650,7 @@ rxnorm_res_cleaned_pdf['drugs'] = rxnorm_res_cleaned_pdf['resolutions'].apply(la
 
 # COMMAND ----------
 
-display(rxnorm_res_cleaned_pdf)
+display(rxnorm_res_cleaned_pdf.head(5))
 
 # COMMAND ----------
 
@@ -656,51 +664,87 @@ rxnorm_res_cleaned_df.write.format('delta').mode('overwrite').save(f'{delta_path
 
 # COMMAND ----------
 
-display(rxnorm_res_cleaned_df.limit(10))
+display(rxnorm_res_cleaned_df.limit(5))
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC Checking all posology entities `DRUG`, `FREQUENCY`, `DURATION`, `STRENGTH`, `FORM`, `DOSAGE` and `ROUTE` and their RXNORM Code by using `ner_posology_greedy` model without WhiteList.
+# MAGIC Checking all posology entities `DRUG`, `FREQUENCY`, `DURATION`, `STRENGTH`, `FORM`, `DOSAGE` and `ROUTE` and their RXNORM Code by using `ner_posology_greedy` model. <br/>
+# MAGIC We will take our greedy chunks into rxnorm resolver to see what will change
 
 # COMMAND ----------
 
+documentAssembler = DocumentAssembler()\
+    .setInputCol("text")\
+    .setOutputCol("document")
+
+sentenceDetector = SentenceDetectorDLModel.pretrained("sentence_detector_dl_healthcare","en","clinical/models") \
+    .setInputCols(["document"]) \
+    .setOutputCol("sentence")
+
+tokenizer = Tokenizer()\
+    .setInputCols(["sentence"])\
+    .setOutputCol("token")\
+
+word_embeddings = WordEmbeddingsModel.pretrained("embeddings_clinical", "en", "clinical/models")\
+    .setInputCols(["sentence", "token"])\
+    .setOutputCol("embeddings")
+
 ## to get drugs
-drugs_ner_greedy = MedicalNerModel.pretrained("ner_posology_greedy", "en", "clinical/models") \
+drugs_ner_ing = MedicalNerModel.pretrained("ner_posology_greedy", "en", "clinical/models") \
     .setInputCols(["sentence", "token", "embeddings"]) \
-    .setOutputCol("ner_drug")\
-    .setIncludeConfidence(False)
+    .setOutputCol("ner_drug")
 
 drugs_ner_converter_ing = NerConverter() \
     .setInputCols(["sentence", "token", "ner_drug"]) \
-    .setOutputCol("ner_chunk")
+    .setOutputCol("ner_chunk_drug")\
+    .setWhiteList(["DRUG"])
 
+greedy_ner_converter_ing = NerConverter() \
+    .setInputCols(["sentence", "token", "ner_drug"]) \
+    .setOutputCol("ner_chunk_greedy")
+
+drugs_c2doc = Chunk2Doc().setInputCols("ner_chunk_drug").setOutputCol("ner_chunk_doc") 
+
+sbert_embedder_ing = BertSentenceEmbeddings.pretrained("sbiobert_base_cased_mli", 'en', 'clinical/models')\
+    .setInputCols(["ner_chunk_doc"])\
+    .setOutputCol("sentence_embeddings")
+
+rxnorm_resolver = SentenceEntityResolverModel.pretrained("sbiobertresolve_rxnorm_augmented","en", "clinical/models")\
+    .setInputCols(["sentence_embeddings"]) \
+    .setOutputCol("rxnorm_code")\
+    .setDistanceFunction("EUCLIDEAN")
     
-pipeline_rxnorm_greedy = Pipeline(
+
+pipeline_rxnorm_ingredient = Pipeline(
     stages = [
         documentAssembler,
         sentenceDetector,
         tokenizer,
         word_embeddings,
-        drugs_ner_greedy,
-        drugs_ner_converter_ing])
+        drugs_ner_ing,
+        drugs_ner_converter_ing, 
+        greedy_ner_converter_ing,
+        drugs_c2doc, 
+        sbert_embedder_ing,
+        rxnorm_resolver])
 
 data_ner = spark.createDataFrame([['']]).toDF("text")
-rxnorm_model_greedy = pipeline_rxnorm_greedy.fit(data_ner)
+rxnorm_model = pipeline_rxnorm_ingredient.fit(data_ner)
+
+# COMMAND ----------
+
+rxnorm_greedy_lp = LightPipeline(rxnorm_model)
+
+# COMMAND ----------
+
+ann_text = rxnorm_greedy_lp.fullAnnotate(sample_text.text)[0]
+print(ann_text.keys())
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC Visualize Greedy Algorithm Entities
-
-# COMMAND ----------
-
-# sample_text = df.limit(1).select("text").collect()[0]
-
-rxnorm_greedy_lp = LightPipeline(rxnorm_model_greedy)
-
-ann_text = rxnorm_greedy_lp.fullAnnotate(sample_text)[0]
-print(ann_text.keys())
+# MAGIC Visualize Greedy Algorithm Entities without WhiteList
 
 # COMMAND ----------
 
@@ -709,83 +753,50 @@ from sparknlp_display import NerVisualizer
 
 visualiser = NerVisualizer()
 
-# Change color of DRUG entity label
+# Change color of an entity label
 visualiser.set_label_colors({'DRUG':'#008080'})
-ner_vis = visualiser.display(ann_text, label_col='ner_chunk',return_html=True)
+ner_vis = visualiser.display(ann_text, label_col='ner_chunk_greedy',return_html=True)
 
 #Displaying the vizualizer 
 displayHTML(ner_vis)
 
 # COMMAND ----------
 
-# MAGIC %md
-# MAGIC Lets take our greedy chunks into rxnorm resolver to see what will change
+rxnorm_code_res = rxnorm_model.transform(df) 
 
 # COMMAND ----------
 
-rxnorm_code_greedy_res_df = rxnorm_model_greedy.transform(df)
-
-# COMMAND ----------
-
-rxnorm_code_greedy_res_pdf = rxnorm_code_greedy_res_df.select("path", F.explode(F.arrays_zip('ner_chunk.result', 
-                                                               'ner_chunk.metadata')).alias("cols"))\
-                         .select("path", F.expr("cols['result']").alias("ner_chunk"), 
-                                         F.expr("cols['metadata']['entity']").alias("entity")).toPandas()
-
-rxnorm_ner_greedy_chunks = list(rxnorm_code_greedy_res_pdf.ner_chunk)
-
-# COMMAND ----------
-
-sbert_embedder = BertSentenceEmbeddings.pretrained("sbiobert_base_cased_mli", 'en', 'clinical/models')\
-  .setInputCols(["ner_chunks"])\
-  .setOutputCol("sentence_embeddings")
-
-rxnorm_resolver = SentenceEntityResolverModel.pretrained("sbiobertresolve_rxnorm","en", "clinical/models")\
-  .setInputCols(["ner_chunks", "sentence_embeddings"]) \
-  .setOutputCol("rxnorm_code")\
-  .setDistanceFunction("EUCLIDEAN")
-
-rxnorm_greedy_pipelineModel = PipelineModel(stages=[
-            documentAssemblerResolver,
-            sbert_embedder,
-            rxnorm_resolver
-            ])
-
-# COMMAND ----------
-
-rxnorm_greedy_lp = LightPipeline(rxnorm_greedy_pipelineModel)
-
-# COMMAND ----------
-
-rxnorm_greedy_code_res = rxnorm_greedy_lp.fullAnnotate(rxnorm_ner_greedy_chunks)
-
-# COMMAND ----------
-
-tuples = []
-
-for i in range(len(rxnorm_greedy_code_res)):
-    for x,y in zip(rxnorm_greedy_code_res[i]["ner_chunks"], rxnorm_greedy_code_res[i]["rxnorm_code"]):
-        tuples.append((rxnorm_code_greedy_res_pdf.path.iloc[i],x.result, y.result, y.metadata["confidence"], y.metadata["all_k_results"], y.metadata["all_k_resolutions"]))
-
-rxnorm_greedy_res = pd.DataFrame(tuples, columns=["path", "drug_chunk", "rxnorm_code", "confidence", "all_codes", "resolutions"])
+rxnorm_res = rxnorm_code_res.select("path", F.explode(F.arrays_zip( rxnorm_code_res.ner_chunk_drug.result, rxnorm_code_res.rxnorm_code.result, rxnorm_code_res.rxnorm_code.metadata)).alias("cols"))\
+                            .select("path", F.expr("cols['0']").alias("drug_chunk"),
+                                            F.expr("cols['1']").alias("rxnorm_code"),
+                                            F.expr("cols['2']['confidence']").alias("confidence"),
+                                            F.expr("cols['2']['all_k_results']").alias("all_codes"),
+                                            F.expr("cols['2']['all_k_resolutions']").alias("resolutions")).toPandas()
 
 
 codes = []
 resolutions = []
 
-for code, resolution in zip(rxnorm_greedy_res['all_codes'], rxnorm_greedy_res['resolutions']):
+for code, resolution in zip(rxnorm_res['all_codes'], rxnorm_res['resolutions']):
     
     codes.append(code.split(':::'))
     resolutions.append(resolution.split(':::'))
     
   
-rxnorm_greedy_res['all_codes'] = codes  
-rxnorm_greedy_res['resolutions'] = resolutions
-rxnorm_greedy_res['drugs'] = rxnorm_greedy_res['resolutions'].apply(lambda x : x[0])
+rxnorm_res['all_codes'] = codes  
+rxnorm_res['resolutions'] = resolutions
+rxnorm_res['drugs'] = rxnorm_res['resolutions'].apply(lambda x : x[0])
 
 # COMMAND ----------
 
-rxnorm_greedy_res.head(20)
+rxnorm_res.head(5)
+
+# COMMAND ----------
+
+rxnorm_code_greedy_res_pdf = rxnorm_code_res.select("path", F.explode(F.arrays_zip('ner_chunk_drug.result', 
+                                                               'ner_chunk_drug.metadata')).alias("cols"))\
+                         .select("path", F.expr("cols['result']").alias("ner_chunk"), 
+                                         F.expr("cols['metadata']['entity']").alias("entity")).toPandas()
 
 # COMMAND ----------
 
@@ -1002,7 +1013,7 @@ cpt_code_res = cpt_model.transform(df)
 # COMMAND ----------
 
 cpt_ner_df = cpt_code_res.select("path", F.explode(F.arrays_zip('ner_chunk.result', 
-                                                                   'ner_chunk.metadata')).alias("cols"))\
+                                                                'ner_chunk.metadata')).alias("cols"))\
                          .select("path", F.expr("cols['result']").alias("ner_chunk"), 
                                          F.expr("cols['metadata']['entity']").alias("entity")).toPandas()
 
@@ -1014,8 +1025,8 @@ sbert_embedder = BertSentenceEmbeddings.pretrained("sbiobert_base_cased_mli", 'e
   .setInputCols(["ner_chunks"])\
   .setOutputCol("sentence_embeddings")
 
-cpt_resolver = SentenceEntityResolverModel.pretrained("sbiobertresolve_cpt","en", "clinical/models")\
-  .setInputCols(["ner_chunks", "sentence_embeddings"]) \
+cpt_resolver = SentenceEntityResolverModel.pretrained("sbiobertresolve_cpt_augmented","en", "clinical/models")\
+  .setInputCols(["sentence_embeddings"]) \
   .setOutputCol("cpt_code")\
   .setDistanceFunction("EUCLIDEAN")
 
@@ -1139,7 +1150,7 @@ assertion_df = (assertion_res.selectExpr('*', 'final_ner_chunk.result as final_n
 
 # COMMAND ----------
 
-assertion_df.head(10)
+display(assertion_df.head(10))
 
 # COMMAND ----------
 
