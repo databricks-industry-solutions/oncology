@@ -17,6 +17,8 @@
 # MAGIC - Relations between internal body part and procedures.
 # MAGIC - Analysis of procedures used on oncological events.
 # MAGIC - Checking assertion status of oncological findings.
+# MAGIC 
+# MAGIC Please use a cluster with **9.1 ML CPU** Runtime.
 
 # COMMAND ----------
 
@@ -601,7 +603,7 @@ sbert_embedder = BertSentenceEmbeddings.pretrained("sbiobert_base_cased_mli", 'e
   .setOutputCol("sentence_embeddings")
 
 rxnorm_resolver = SentenceEntityResolverModel.pretrained("sbiobertresolve_rxnorm_augmented","en", "clinical/models")\
-  .setInputCols(["sentence_embeddings"]) \
+  .setInputCols(["sentence_embeddings"])\
   .setOutputCol("rxnorm_code")\
   .setDistanceFunction("EUCLIDEAN")
 
@@ -711,7 +713,7 @@ sbert_embedder_ing = BertSentenceEmbeddings.pretrained("sbiobert_base_cased_mli"
     .setOutputCol("sentence_embeddings")
 
 rxnorm_resolver = SentenceEntityResolverModel.pretrained("sbiobertresolve_rxnorm_augmented","en", "clinical/models")\
-    .setInputCols(["sentence_embeddings"]) \
+    .setInputCols(["sentence_embeddings"])\
     .setOutputCol("rxnorm_code")\
     .setDistanceFunction("EUCLIDEAN")
     
@@ -1026,7 +1028,7 @@ sbert_embedder = BertSentenceEmbeddings.pretrained("sbiobert_base_cased_mli", 'e
   .setOutputCol("sentence_embeddings")
 
 cpt_resolver = SentenceEntityResolverModel.pretrained("sbiobertresolve_cpt_augmented","en", "clinical/models")\
-  .setInputCols(["sentence_embeddings"]) \
+  .setInputCols(["sentence_embeddings"])\
   .setOutputCol("cpt_code")\
   .setDistanceFunction("EUCLIDEAN")
 

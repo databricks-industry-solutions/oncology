@@ -1,4 +1,9 @@
 -- Databricks notebook source
+-- MAGIC %md 
+-- MAGIC You may find this series of notebooks at https://github.com/databricks-industry-solutions/oncology. For more information about this solution accelerator, visit https://www.databricks.com/solutions/accelerators/nlp-oncology.
+
+-- COMMAND ----------
+
 -- MAGIC %md
 -- MAGIC # Create a Database of Oncological Entities Based on Unstructured Notes
 -- MAGIC In this notebook, we create a database of entities based on extracted terms from the notes in previous notebooks. 
