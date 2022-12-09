@@ -235,7 +235,7 @@ ner_model = ner_pipeline.fit(empty_data)
 # COMMAND ----------
 
 light_model =  LightPipeline(ner_model)
-ann_text = light_model.fullAnnotate(sample_text)[0]
+ann_text = light_model.fullAnnotate(sample_text.text)[0]
 ann_text.keys()
 
 # COMMAND ----------
@@ -302,7 +302,7 @@ sbert_embedder = BertSentenceEmbeddings.pretrained("sbert_jsl_medium_uncased", '
   .setOutputCol("sentence_embeddings")
 
 icd10_resolver = SentenceEntityResolverModel.pretrained("sbertresolve_icd10cm_slim_billable_hcc_med","en", "clinical/models")\
-  .setInputCols(["ner_chunks", "sentence_embeddings"]) \
+  .setInputCols(["sentence_embeddings"]) \
   .setOutputCol("icd10_code")\
   .setDistanceFunction("EUCLIDEAN")
 
@@ -556,7 +556,7 @@ rxnorm_ner_model = pipeline_rxnorm_ingredient.fit(data_ner)
 
 rxnorm_ner_lp = LightPipeline(rxnorm_ner_model)
 
-ann_text = rxnorm_ner_lp.fullAnnotate(sample_text)[0]
+ann_text = rxnorm_ner_lp.fullAnnotate(sample_text.text)[0]
 print(ann_text.keys())
 
 # COMMAND ----------
@@ -603,7 +603,7 @@ sbert_embedder = BertSentenceEmbeddings.pretrained("sbiobert_base_cased_mli", 'e
   .setOutputCol("sentence_embeddings")
 
 rxnorm_resolver = SentenceEntityResolverModel.pretrained("sbiobertresolve_rxnorm_augmented","en", "clinical/models")\
-  .setInputCols(["ner_chunks", "sentence_embeddings"]) \
+  .setInputCols(["sentence_embeddings"])\
   .setOutputCol("rxnorm_code")\
   .setDistanceFunction("EUCLIDEAN")
 
@@ -713,7 +713,7 @@ sbert_embedder_ing = BertSentenceEmbeddings.pretrained("sbiobert_base_cased_mli"
     .setOutputCol("sentence_embeddings")
 
 rxnorm_resolver = SentenceEntityResolverModel.pretrained("sbiobertresolve_rxnorm_augmented","en", "clinical/models")\
-    .setInputCols(["ner_chunk_drug", "sentence_embeddings"]) \
+    .setInputCols(["sentence_embeddings"])\
     .setOutputCol("rxnorm_code")\
     .setDistanceFunction("EUCLIDEAN")
     
@@ -740,7 +740,7 @@ rxnorm_greedy_lp = LightPipeline(rxnorm_model)
 
 # COMMAND ----------
 
-ann_text = rxnorm_greedy_lp.fullAnnotate(sample_text)[0]
+ann_text = rxnorm_greedy_lp.fullAnnotate(sample_text.text)[0]
 print(ann_text.keys())
 
 # COMMAND ----------
@@ -1028,7 +1028,7 @@ sbert_embedder = BertSentenceEmbeddings.pretrained("sbiobert_base_cased_mli", 'e
   .setOutputCol("sentence_embeddings")
 
 cpt_resolver = SentenceEntityResolverModel.pretrained("sbiobertresolve_cpt_augmented","en", "clinical/models")\
-  .setInputCols(["ner_chunks", "sentence_embeddings"]) \
+  .setInputCols(["sentence_embeddings"])\
   .setOutputCol("cpt_code")\
   .setDistanceFunction("EUCLIDEAN")
 
@@ -1152,7 +1152,7 @@ assertion_df = (assertion_res.selectExpr('*', 'final_ner_chunk.result as final_n
 
 # COMMAND ----------
 
-assertion_df.head(10)
+display(assertion_df.head(10))
 
 # COMMAND ----------
 

@@ -14,6 +14,27 @@
 
 # COMMAND ----------
 
+!pip install mlflow
+
+# COMMAND ----------
+
+import mlflow
+import numpy as np
+import pandas as pd
+from pyspark.sql import functions as F
+
+# COMMAND ----------
+
+mlflow.set_tracking_uri('databricks')
+
+# COMMAND ----------
+
+# MAGIC %md 
+# MAGIC **Important Note! After running the cell above, please detach & re-attach to the cluster and continue.**
+
+# COMMAND ----------
+
+import mlflow
 import numpy as np
 import pandas as pd
 from pyspark.sql import functions as F
