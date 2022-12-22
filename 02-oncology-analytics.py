@@ -14,7 +14,7 @@
 
 # COMMAND ----------
 
-!pip install mlflow
+!pip install mlflow==2.0.1
 
 # COMMAND ----------
 
