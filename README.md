@@ -1,6 +1,6 @@
 #Abstracting Real World Data from Oncology Notes
 
-In this collection, we use [John Snow Labs’ Spark NLP for Healthcare](https://www.johnsnowlabs.com/spark-nlp-health/), the most widely-used NLP library in the healthcare and life science industries, to extarct, classify and structure clinical and biomedical text data with state-of-the-art accuracy at scale. 
+In this collection, we use [John Snow Labs’ Spark NLP for Healthcare](https://www.johnsnowlabs.com/spark-nlp-health/), the most widely-used NLP library in the healthcare and life science industries, to extract, classify and structure clinical and biomedical text data with state-of-the-art accuracy at scale. 
 For this solution we used the [MT ONCOLOGY NOTES]((https://www.mtsamplereports.com/) dataset. It offers resources primarily in the form of transcribed sample medical reports across medical specialties and common medical transcription words/phrases encountered in specific sections that form part of a medical report  – sections such as physical examination or PE, review of systems or ROS, laboratory data and mental status exam, among others. 
 
 We chose 50 de-identified oncology reports from the MT Oncology notes dataset as the source of the unstructured text and landed the raw text data into the Delta Lake bronze layer. For demonstration purposes, we limited the number of samples to 50, but the framework presented in this solution accelerator can be scaled to accommodate millions of clinical notes and text files. 
@@ -9,7 +9,7 @@ The first step in our accelerator is to extract variables using various models f
 <br>
 <img src="https://hls-eng-data-public.s3.amazonaws.com/img/phi-deid-ra.png" width=65%>
 
-We then create dataframes of extracted entitities and land the tables in Delta where can be accessed for interactive analysis or dashboarding using [databricks SQL](https://databricks.com/product/databricks-sql). 
+We then create dataframes of extracted entities and land the tables in Delta where can be accessed for interactive analysis or dashboarding using [databricks SQL](https://databricks.com/product/databricks-sql). 
 
 <br>
 <img src="https://hls-eng-data-public.s3.amazonaws.com/img/jsl-dash.png" width=65%>
@@ -34,7 +34,7 @@ Here we show how to use Spark NLP's existing models to process raw text and extr
 There are three notebooks in this package:
 
 1. `config`: Notebook for configuring the environment
-2. `entity-extraction`: Extract drugs, oncological entitities, assertion status and relationships and writes the data into Delta lake.
+2. `entity-extraction`: Extract drugs, oncological entities, assertion status and relationships and writes the data into Delta lake.
 3. `oncology-analytics`: Interactive analysis of the data. 
 
 ## License

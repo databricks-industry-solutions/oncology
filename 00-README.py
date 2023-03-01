@@ -7,7 +7,7 @@
 # MAGIC %md
 # MAGIC #Abstracting Real World Data from Oncology Notes
 # MAGIC 
-# MAGIC In this collection, we use [John Snow Labs’ Spark NLP for Healthcare](https://www.johnsnowlabs.com/spark-nlp-health/), the most widely-used NLP library in the healthcare and life science industries, to extarct, classify and structure clinical and biomedical text data with state-of-the-art accuracy at scale. 
+# MAGIC In this collection, we use [John Snow Labs’ Spark NLP for Healthcare](https://www.johnsnowlabs.com/spark-nlp-health/), the most widely-used NLP library in the healthcare and life science industries, to extract, classify and structure clinical and biomedical text data with state-of-the-art accuracy at scale. 
 # MAGIC For this solution we used the [MT ONCOLOGY NOTES]((https://www.mtsamplereports.com/) dataset. It offers resources primarily in the form of transcribed sample medical reports across medical specialties and common medical transcription words/phrases encountered in specific sections that form part of a medical report  – sections such as physical examination or PE, review of systems or ROS, laboratory data and mental status exam, among others. 
 # MAGIC 
 # MAGIC We chose 50 de-identified oncology reports from the MT Oncology notes dataset as the source of the unstructured text and landed the raw text data into the Delta Lake bronze layer. For demonstration purposes, we limited the number of samples to 50, but the framework presented in this solution accelerator can be scaled to accommodate millions of clinical notes and text files. 
@@ -16,7 +16,7 @@
 # MAGIC <br>
 # MAGIC <img src="https://raw.githubusercontent.com/JohnSnowLabs/spark-nlp-workshop/master/databricks/solution_accelerators/images/dbr_flow.png" width=65%>
 # MAGIC 
-# MAGIC We then create dataframes of extracted entitities and land the tables in Delta where can be accessed for interactive analysis or dashboarding using [databricks SQL](https://databricks.com/product/databricks-sql). 
+# MAGIC We then create dataframes of extracted entities and land the tables in Delta where can be accessed for interactive analysis or dashboarding using [databricks SQL](https://databricks.com/product/databricks-sql). 
 # MAGIC 
 # MAGIC <br>
 # MAGIC <img src="https://raw.githubusercontent.com/JohnSnowLabs/spark-nlp-workshop/master/databricks/solution_accelerators/images/insights_from_oncology_repots.png" width=65%>
@@ -44,7 +44,7 @@
 # MAGIC There are three notebooks in this package:
 # MAGIC 
 # MAGIC 1. `config`: Notebook for configuring the environment
-# MAGIC 2. `entity-extraction`: Extract drugs, oncological entitities, assertion status and relationships and writes the data into Delta lake.
+# MAGIC 2. `entity-extraction`: Extract drugs, oncological entities, assertion status and relationships and writes the data into Delta lake.
 # MAGIC 3. `oncology-analytics`: Interactive analysis of the data. 
 
 # COMMAND ----------
@@ -54,7 +54,7 @@
 # MAGIC If you are new to Databricks, create an account at: https://databricks.com/try-databricks
 # MAGIC ### Turnkey John Snow Labs installation
 # MAGIC 
-# MAGIC Complete John Snow Labs onboarding form at: www.JohnSnowLabs.com/Databricks and speficy `Name`, `email`, `Databricks instance URL` and [access token](https://docs.databricks.com/dev-tools/api/latest/authentication.html#authentication-using-databricks-personal-access-tokens). Choose a cluster to install in, or install in a new one. Verify your email to start the installation
+# MAGIC Complete John Snow Labs onboarding form at: www.JohnSnowLabs.com/Databricks and specify `Name`, `email`, `Databricks instance URL` and [access token](https://docs.databricks.com/dev-tools/api/latest/authentication.html#authentication-using-databricks-personal-access-tokens). Choose a cluster to install in, or install in a new one. Verify your email to start the installation
 # MAGIC 
 # MAGIC ### What does the turnkey John Snow Labs installation do?
 # MAGIC - Create a new Databricks cluster if needed

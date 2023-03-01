@@ -167,12 +167,12 @@ base_stages = [
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ### Vizualize the Entities Using Spark NLP Display Library
+# MAGIC ### Visualize the Entities Using Spark NLP Display Library
 
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC At first, we will create a NER pipeline. And then, we can see the labbeled entities on text.
+# MAGIC At first, we will create a NER pipeline. And then, we can see the labeled entities on text.
 
 # COMMAND ----------
 
@@ -203,7 +203,7 @@ jsl_ner_converter = NerConverter() \
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC We used two diferent NER models (`jsl_ner_wip_clinical` and `bionlp_ner`) and we need to merge them by a chunk merger. There are two different entities related to oncology. So we will change `Cancer` entities to `Oncological` by `setReplaceDictResource` parameter. This parameter gets the list from a csv file. Before merging the entities, we are creating the csv file with a row `Cancer,Oncological`.
+# MAGIC We used two different NER models (`jsl_ner_wip_clinical` and `bionlp_ner`) and we need to merge them by a chunk merger. There are two different entities related to oncology. So we will change `Cancer` entities to `Oncological` by `setReplaceDictResource` parameter. This parameter gets the list from a csv file. Before merging the entities, we are creating the csv file with a row `Cancer,Oncological`.
 
 # COMMAND ----------
 
@@ -242,12 +242,12 @@ ann_text.keys()
 
 from sparknlp_display import NerVisualizer
 
-visualiser = NerVisualizer()
+visualizer = NerVisualizer()
 
 # Change color of an entity label
-visualiser.set_label_colors({'ONCOLOGICAL':'#ff2e51', 'TREATMENT': '#3bdeff', 'SYMPTOM': '#00ff40' })
+visualizer.set_label_colors({'ONCOLOGICAL':'#ff2e51', 'TREATMENT': '#3bdeff', 'SYMPTOM': '#00ff40' })
 
-ner_vis = visualiser.display(ann_text, label_col='final_ner_chunk',return_html=True)
+ner_vis = visualizer.display(ann_text, label_col='final_ner_chunk',return_html=True)
 
 displayHTML(ner_vis)
 
@@ -273,7 +273,7 @@ ner_res = ner_model.transform(df)
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC Optionally we can also store `ner_res` data into the broze delta laeyer for future accesibility
+# MAGIC Optionally we can also store `ner_res` data into the bronze delta layer for future accessibility
 
 # COMMAND ----------
 
@@ -350,7 +350,7 @@ icd10_hcc_pdf['hcc_list'] = hcc_all
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC The values in `billable`, `hcc_store` and `hcc_status` columns are seperated by `||` and we will change them to a list.
+# MAGIC The values in `billable`, `hcc_store` and `hcc_status` columns are separated by `||` and we will change them to a list.
 
 # COMMAND ----------
 
@@ -561,16 +561,16 @@ print(ann_text.keys())
 
 # COMMAND ----------
 
-#Creating the vizualizer 
+#Creating the visualizer 
 from sparknlp_display import NerVisualizer
 
-visualiser = NerVisualizer()
+visualizer = NerVisualizer()
 
 # Change color of an entity label
-visualiser.set_label_colors({'DRUG':'#008080'})
-ner_vis = visualiser.display(ann_text, label_col='ner_chunk',return_html=True)
+visualizer.set_label_colors({'DRUG':'#008080'})
+ner_vis = visualizer.display(ann_text, label_col='ner_chunk',return_html=True)
 
-#Displaying the vizualizer 
+#Displaying the visualizer 
 displayHTML(ner_vis)
 
 # COMMAND ----------
@@ -624,7 +624,7 @@ rxnorm_code_res = rxnorm_resolver_lp.fullAnnotate(rxnorm_ner_chunks)
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC We are selecting the columns which we need and convert to Pandas DataFrame. The values in `all_codes` and `resolitions` columns are seperated by ":::" and we are converting these columns to lists.
+# MAGIC We are selecting the columns which we need and convert to Pandas DataFrame. The values in `all_codes` and `resolutions` columns are separated by ":::" and we are converting these columns to lists.
 
 # COMMAND ----------
 
@@ -750,16 +750,16 @@ print(ann_text.keys())
 
 # COMMAND ----------
 
-#Creating the vizualizer 
+#Creating the visualizer 
 from sparknlp_display import NerVisualizer
 
-visualiser = NerVisualizer()
+visualizer = NerVisualizer()
 
 # Change color of an entity label
-visualiser.set_label_colors({'DRUG':'#008080'})
-ner_vis = visualiser.display(ann_text, label_col='ner_chunk_greedy',return_html=True)
+visualizer.set_label_colors({'DRUG':'#008080'})
+ner_vis = visualizer.display(ann_text, label_col='ner_chunk_greedy',return_html=True)
 
-#Displaying the vizualizer 
+#Displaying the visualizer 
 displayHTML(ner_vis)
 
 # COMMAND ----------
@@ -819,7 +819,7 @@ display(rxnorm_code_greedy_res_df.limit(10))
 # MAGIC %md
 # MAGIC ## 3. Get Timeline Using RE Models
 # MAGIC 
-# MAGIC We will create a relation extration model to identify temporal relationships among clinical events by using pretrained **RelationExtractionModel** `re_temporal_events_clinical`.
+# MAGIC We will create a relation extraction model to identify temporal relationships among clinical events by using pretrained **RelationExtractionModel** `re_temporal_events_clinical`.
 
 # COMMAND ----------
 
@@ -898,7 +898,7 @@ temporal_re_df_silver.write.format('delta').mode("overwrite").save(f"{delta_path
 # MAGIC %md
 # MAGIC ## 4. Relations Between Body Parts and Procedures
 # MAGIC 
-# MAGIC We will create a relation extration model to identify relationships between body parts and problem entities by using pretrained **RelationExtractionModel** `re_bodypart_problem`.
+# MAGIC We will create a relation extraction model to identify relationships between body parts and problem entities by using pretrained **RelationExtractionModel** `re_bodypart_problem`.
 
 # COMMAND ----------
 
