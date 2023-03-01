@@ -7,7 +7,7 @@
 # MAGIC %md
 # MAGIC # Abstracting Real World Data from Oncology Notes: Data Analysis
 # MAGIC 
-# MAGIC In the previous notebook (`./00-entity-extraction`) we used SparkNLP's pipelines to extract hightly specialized oncological entities from unstructured notes and stored the resulting tabular data in our delta lake.
+# MAGIC In the previous notebook (`./00-entity-extraction`) we used SparkNLP's pipelines to extract highly specialized oncological entities from unstructured notes and stored the resulting tabular data in our delta lake.
 # MAGIC 
 # MAGIC In this notebook we analyze these data to answer questions such as:
 # MAGIC What are the most common cancer subtypes? What are the most common symptoms and how are these symptoms associated with each cancer subtype? which indications have the highest risk factor? etc. 
@@ -283,7 +283,7 @@ data_pdf=conditions_symptoms_count_pdf.loc[selected_rows,selected_columns]
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC Now let's visualize the heatmap of the co-occurence of conditions and symptoms. We can directly look at the counts of symptoms by condition
+# MAGIC Now let's visualize the heatmap of the co-occurrence of conditions and symptoms. We can directly look at the counts of symptoms by condition
 
 # COMMAND ----------
 
@@ -317,7 +317,7 @@ normalized_data=MinMaxScaler().fit(data_pdf).transform(data_pdf)
 # COMMAND ----------
 
 norm_data_pdf=pd.DataFrame(normalized_data,index=data_pdf.index,columns=data_pdf.columns)
-plot_heatmap(norm_data_pdf,'normalized occurence')
+plot_heatmap(norm_data_pdf,'normalized occurrence')
 
 # COMMAND ----------
 
@@ -359,9 +359,9 @@ display(
 # COMMAND ----------
 
 # MAGIC %md
-# MAGIC ## Find the problems occured after treatments 
+# MAGIC ## Find the problems occurred after treatments 
 # MAGIC 
-# MAGIC We are filtering the dataframe to select rows with following conditions to see problems occured after treatments.
+# MAGIC We are filtering the dataframe to select rows with following conditions to see problems occurred after treatments.
 # MAGIC * `relation =='AFTER'`
 # MAGIC * `entity1=='TREATMENT'`
 # MAGIC * `entity2=='PROBLEM'`
@@ -376,7 +376,7 @@ display(temporal_re_df)
 
 # COMMAND ----------
 
-# DBTITLE 1,Problems occuring after treatment
+# DBTITLE 1,Problems occurring after treatment
 display(
   temporal_re_df
   .where("relation == 'AFTER' AND entity1=='TREATMENT' AND entity2 == 'PROBLEM'")
@@ -389,7 +389,7 @@ display(
 # MAGIC %md
 # MAGIC # 4. Analyze the Relations Between Body Parts and Procedures
 # MAGIC 
-# MAGIC In the extraction notebook, we created a relation extration model to identify relationships between body parts and problem entities by using pretrained **RelationExtractionModel** `re_bodypart_problem`. Now let's load the data and take a look at the relationship between bodypart and procedures. By filtering the dataframe to select rows satisfying `entity1 != entity2` we can see the relations between different entities and see the procedures applied to internal organs
+# MAGIC In the extraction notebook, we created a relation extraction model to identify relationships between body parts and problem entities by using pretrained **RelationExtractionModel** `re_bodypart_problem`. Now let's load the data and take a look at the relationship between bodypart and procedures. By filtering the dataframe to select rows satisfying `entity1 != entity2` we can see the relations between different entities and see the procedures applied to internal organs
 
 # COMMAND ----------
 
@@ -408,7 +408,7 @@ display(
 # MAGIC %md
 # MAGIC # 5. Get Procedure codes from notes
 # MAGIC 
-# MAGIC We will created dataset for procedure codes, using `jsl_ner_wip_greedy_clinical` NER mdodle and set NerConverter's WhiteList `['Procedure']` in order to get only drug entities. Let's take a look at this table:
+# MAGIC We will created dataset for procedure codes, using `jsl_ner_wip_greedy_clinical` NER module and set NerConverter's WhiteList `['Procedure']` in order to get only drug entities. Let's take a look at this table:
 
 # COMMAND ----------
 
@@ -439,7 +439,7 @@ display(
 # MAGIC %md
 # MAGIC # 6. Get Assertion Status of Cancer Entities
 # MAGIC 
-# MAGIC Using the assertion status dataset we can find the number of family members of cancer patients with cancer or symptoms, and we can fruther check if the symptom is absent or present.
+# MAGIC Using the assertion status dataset we can find the number of family members of cancer patients with cancer or symptoms, and we can further check if the symptom is absent or present.
 
 # COMMAND ----------
 
